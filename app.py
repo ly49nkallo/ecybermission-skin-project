@@ -34,8 +34,8 @@ def after_request(response):
     return response
 
 
-def apology(msg, errorCode):
-    return redirect(url_for('error', msg = msg, code = errorCode))
+def apology(msg, errorCode="none"):
+    return redirect(url_for('.error', msg = msg, code = errorCode))
 
 
 @app.route("/error/<msg>/<code>")
@@ -101,6 +101,26 @@ def register():
             "username"), generate_password_hash(request.form.get("password")))
 
     return render_template("register.html")
+
+
+@app.route("/changepassword", methods=["GET", "POST"])
+@login_required
+def changePassword():
+    """Allow users to change their passwords"""
+    if request.method == "GET":
+        return render_template("changePassword.html")
+    else:
+        if not request.form.get("currentPassword") or not request.form.get("newPassword") or not request.form.get("confirmPassword"):
+            return apology("Must fill out all fields")
+        password = request.form.get("currentPassword")
+        npassword = request.form.get("newPassword")
+        cpassword = request.form.get("confirmPassword")
+        if not check_password_hash(db.execute("SELECT password_hash FROM users WHERE id = ?", session["user_id"])[0]["password_hash"], password):
+            return apology("Incorrect password")
+        if not npassword == cpassword:
+            return apology("Passwords don't match")
+        db.execute("UPDATE users SET password_hash = ? WHERE id = ?", generate_password_hash(str(npassword)), session["user_id"])
+        return redirect("/logout")
 
 
 @app.route("/logout")
