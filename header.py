@@ -2,16 +2,7 @@ import os
 import requests
 import urllib.parse
 
-from flask import redirect, render_template, request, session
 from functools import wraps
-
-def execute(command):
-    # sqlite3
-    con = sqlite3.connect('users.db')
-    cur = con.cursor()
-    cur.execute(command)
-    con.commit()
-    con.close()
 
 def login_required(f):
     """
@@ -25,3 +16,4 @@ def login_required(f):
             return redirect("/login")
         return f(*args, **kwargs)
     return decorated_function
+
