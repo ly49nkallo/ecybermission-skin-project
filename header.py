@@ -1,7 +1,9 @@
 import os
 import requests
 import urllib.parse
+from flask import session, redirect
 
+from flask_session import Session
 from functools import wraps
 
 def login_required(f):
