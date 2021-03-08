@@ -10,7 +10,7 @@ from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from header import login_required
+from header import login_required, lookup, lookup_by_geocode
 
 # Configure CS50 Library to use SQLite database
 db = SQL.SQL("sqlite:///users.db")
@@ -43,19 +43,19 @@ def RepresentsInt(s):
 
 
 def apology(msg, errorCode="none"):
-    return redirect(url_for('.error', msg = msg, code = errorCode))
+    return redirect(url_for('error', msg = str(msg), code = errorCode))
 
 
 @app.route("/error/<msg>/<code>")
 def error(msg, code):
-    if code == "None" or not RepresentsInt(code):
+    if code == "none" or not RepresentsInt(code):
         return render_template("error.html", msg=msg, code="")
     return render_template("error.html", msg=msg, code=code)
 
 @app.route("/")
 @login_required
 def index():
-    return render_template("index.html")
+    return render_template("index.html", lat=lookup_by_geocode(90064)["lat"], lon=lookup_by_geocode(90064)["lon"])
 
 
 @app.route("/login", methods=["GET", "POST"])
