@@ -34,12 +34,22 @@ def after_request(response):
     return response
 
 
+def RepresentsInt(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
+
+
 def apology(msg, errorCode="none"):
     return redirect(url_for('.error', msg = msg, code = errorCode))
 
 
 @app.route("/error/<msg>/<code>")
 def error(msg, code):
+    if code == "None" or not RepresentsInt(code):
+        return render_template("error.html", msg=msg, code="")
     return render_template("error.html", msg=msg, code=code)
 
 @app.route("/")
