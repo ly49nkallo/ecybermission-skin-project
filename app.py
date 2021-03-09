@@ -59,7 +59,9 @@ def index():
     if geocode == None:
         return redirect("/register/survey")
     cache = lookup_by_geocode(geocode)
-    return render_template("index.html", lat=cache["lat"], lon=cache["lon"], d=cache["current"], weather=cache["current"]["weather"][0]["description"])
+    for row in cache["hourly"]:
+        row["disc"] = row["weather"][0]["description"]
+    return render_template("index.html", lat=cache["lat"], lon=cache["lon"], d=cache["current"], weather=cache["current"]["weather"][0]["description"], forecast=cache["hourly"])
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -126,7 +128,11 @@ def survey():
         zip=request.form.get("zip")
         if not RepresentsInt(zip):
             return apology("Zipcode is not an int")
-        db.execute("UPDATE users SET zip=? WHERE id=?", zip, session["user_id"])
+        if not request.form.get("email"):
+            email = "ree"
+        else:
+            email = request.form.get("email")
+        db.execute("UPDATE users SET zip=?, email=? WHERE id=?", zip, str(email), session["user_id"])
         return redirect("/")
     return render_template("survey.html")
 

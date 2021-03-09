@@ -15,8 +15,8 @@
             <td>{{d.uvi}}</td>
         </tr>
         <tr>
-            <td>Temperature (F)</td>
-            <td>{{d.temp}} (Feels like: {{d.feels_like}})</td>
+            <td>Temperature</td>
+            <td>{{d.temp}}*F (Feels like: {{d.feels_like}}*F)</td>
         </tr>
         <tr>
             <td>Weather</td>
@@ -24,11 +24,35 @@
         </tr>
         <tr>
             <td>clouds</td>
-            <td>{{d.clouds}}</td>
+            <td>{{d.clouds}}%</td>
         </tr>
         <tr>
             <td>Humidity</td>
-            <td>{{d.humidity}}</td>
+            <td>{{d.humidity}}%</td>
         </tr>
+</table>
+<br>
+<h2>Hourly Forecast</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">UV Index</th>
+            <th scope="col">Temperature</th>
+            <th scope="col">Weather Disc.</th>
+            <th scope="col">Cloud Cover</th>
+            <th scope="col">Humidity</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in forecast %}
+        <tr>
+            <td>{{row.uvi}}</td>
+            <td>{{row.temp}}</td>
+            <td>{{row.disc}}</td>
+            <td>{{row.clouds}}</td>
+            <td>{{row.humidity}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 {% endblock %}
