@@ -55,7 +55,7 @@ def error(msg, code):
 @app.route("/")
 @login_required
 def index():
-    return render_template("index.html", lat=lookup_by_geocode(90064)["lat"], lon=lookup_by_geocode(90064)["lon"])
+    return render_template("index.html", lat=lookup_by_geocode(90064, session["user_id"])["lat"], lon=lookup_by_geocode(90064, session["user_id"])["lon"])
 
 
 @app.route("/login", methods=["GET", "POST"])
