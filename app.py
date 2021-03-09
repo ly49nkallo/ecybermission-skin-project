@@ -55,7 +55,11 @@ def error(msg, code):
 @app.route("/")
 @login_required
 def index():
-    return render_template("index.html", lat=lookup_by_geocode(90064)["lat"], lon=lookup_by_geocode(90064)["lon"])
+    geocode = db.execute("SELECT zip FROM users WHERE id=?", session["user_id"])[0]["zip"]
+    if geocode == None:
+        return redirect("/register/survey")
+    cache = lookup_by_geocode(geocode)
+    return render_template("index.html", lat=cache["lat"], lon=cache["lon"], d=cache["current"], weather=cache["current"]["weather"][0]["description"])
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -109,8 +113,22 @@ def register():
             return apology("Passwords don't match")
         db.execute("INSERT INTO users (username, password_hash) VALUES (?, ?)", request.form.get(
             "username"), generate_password_hash(request.form.get("password")))
+        return redirect("/login")
 
     return render_template("register.html")
+
+@app.route("/register/survey", methods=["GET", "POST"])
+@login_required
+def survey():
+    if request.method == "POST":
+        if not request.form.get("zip"):
+            return apology("Enter a zipcode!")
+        zip=request.form.get("zip")
+        if not RepresentsInt(zip):
+            return apology("Zipcode is not an int")
+        db.execute("UPDATE users SET zip=? WHERE id=?", zip, session["user_id"])
+        return redirect("/")
+    return render_template("survey.html")
 
 
 @app.route("/changepassword", methods=["GET", "POST"])

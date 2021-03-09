@@ -5,6 +5,30 @@
 {% block main %}
 <h1 class="jumbotron">Homepage</h1>
 <br>
-<p>ludum ipsum dare</p>
+<h3>Location</h3>
 <p>{{lat}} by {{lon}}</p>
+<br>
+<h2>Current Weather</h2>
+<table class="table">
+        <tr>
+            <td>UV Index</td>
+            <td>{{d.uvi}}</td>
+        </tr>
+        <tr>
+            <td>Temperature (F)</td>
+            <td>{{d.temp}} (Feels like: {{d.feels_like}})</td>
+        </tr>
+        <tr>
+            <td>Weather</td>
+            <td>{{weather}}</td>
+        </tr>
+        <tr>
+            <td>clouds</td>
+            <td>{{d.clouds}}</td>
+        </tr>
+        <tr>
+            <td>Humidity</td>
+            <td>{{d.humidity}}</td>
+        </tr>
+</table>
 {% endblock %}

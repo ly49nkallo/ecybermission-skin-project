@@ -3,6 +3,7 @@ import requests
 import urllib.parse
 import pgeocode
 import pandas
+import json
 
 from flask import redirect, render_template, request, session
 from functools import wraps
@@ -33,7 +34,7 @@ def lookup_by_geocode(code, country='us'):
     #  https://pypi.org/project/pgeocode/
     nomi = pgeocode.Nominatim(country)
     if not RepresentsInt(code):
-        raise Exception
+        return None
     pc = nomi.query_postal_code(code).to_dict()
     if pc["latitude"] and pc["longitude"]:
         return lookup(pc["latitude"], pc["longitude"])
@@ -59,6 +60,8 @@ def lookup(lat, lon, exclude=None, lang="en", units="imperial"):
         return "request execptiopn"
     try:
         quote = response.json()
+        with open('data.json', 'w', encoding='utf-8') as f:
+            json.dump(quote, f, ensure_ascii=False, indent=4)
         return quote
     except (KeyError, TypeError, ValueError):
         return "type error r"

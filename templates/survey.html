@@ -1,0 +1,14 @@
+{% extends "layout.html" %} 
+
+{% block title %} Homescreen {% endblock %}
+
+{% block main %}
+    <h1 class="jumbotron">Setup account information</h1>
+    <br>
+    <form action="/register/survey" method="post">
+        <div class="form-group">
+            <input autocomplete="off" autofocus class="form-control" name="zip" placeholder="Zipcode or Postalcode" type="text">
+        </div>
+        <button class="btn btn-primary" type="submit">Log In</button>
+    </form>
+{% endblock %}
