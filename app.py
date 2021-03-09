@@ -9,6 +9,7 @@ from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
+from datetime import datetime
 
 from header import login_required, lookup, lookup_by_geocode
 
@@ -61,7 +62,10 @@ def index():
     cache = lookup_by_geocode(geocode)
     for row in cache["hourly"]:
         row["disc"] = row["weather"][0]["description"]
-    return render_template("index.html", lat=cache["lat"], lon=cache["lon"], d=cache["current"], weather=cache["current"]["weather"][0]["description"], forecast=cache["hourly"])
+        row["time"] = datetime.utcfromtimestamp(int(row["dt"])).strftime('%m/%d %H')
+    return render_template("index.html", zip=geocode, lat=cache["lat"], lon=cache["lon"], d=cache["current"], weather=cache["current"]["weather"][0]["description"], forecast=cache["hourly"])
+
+
 
 
 @app.route("/login", methods=["GET", "POST"])
