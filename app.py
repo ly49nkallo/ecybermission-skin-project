@@ -151,7 +151,9 @@ def survey():
             return apology("Zipcode is not an int")
         spf = request.form.get("spf")
         skintone = request.form.get("skintone")
-        if not skintone:
+        eskintone = db.execute("SELECT skintone FROM users WHERE id=?", session["user_id"])[0]["skintone"]
+        espf = db.execute("SELECT spf FROM users WHERE id=?", session["user_id"])[0]["spf"]
+        if not skintone and not eskintone:
             skintone = 0
         if not RepresentsInt(skintone):
             return apology("skintone must be an integer")
@@ -159,6 +161,8 @@ def survey():
             return apology("skintone not in range")
         if spf and not RepresentsInt(spf):
             return apology("spf must be a number")
+        if not spf and espf:
+            spf = espf
         spf = int(spf)
         db.execute("UPDATE users SET zip=?, email=?, spf=?, skintone=? WHERE id=?", 
                 zip, str(email), int(spf), int(skintone), session["user_id"])
