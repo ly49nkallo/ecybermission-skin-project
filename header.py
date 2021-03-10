@@ -8,7 +8,9 @@ import json
 from flask import redirect, render_template, request, session
 from functools import wraps
 
+
 from werkzeug import exceptions
+
 
 def RepresentsInt(s):
     try:

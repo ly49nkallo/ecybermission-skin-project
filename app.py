@@ -10,6 +10,8 @@ from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
+from flask_mail import Mail
+from flask_mail import Message
 
 from header import login_required, lookup, lookup_by_geocode
 
@@ -18,9 +20,10 @@ db = SQL.SQL("sqlite:///users.db")
 
 # Boiler plate stuff
 app = Flask(__name__)
-app.config["TEMPLATES_AUTO_RELOAD"] = True
+mail = Mail(app)
 
 # Configure session to use filesystem (instead of signed cookies)
+app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SESSION_FILE_DIR"] = mkdtemp()
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
@@ -53,6 +56,7 @@ def error(msg, code):
         return render_template("error.html", msg=msg, code="")
     return render_template("error.html", msg=msg, code=code)
 
+
 @app.route("/")
 @login_required
 def index():
@@ -63,7 +67,12 @@ def index():
     for row in cache["hourly"]:
         row["disc"] = row["weather"][0]["description"]
         row["time"] = datetime.utcfromtimestamp(int(row["dt"])).strftime('%m/%d %H')
-    return render_template("index.html", zip=geocode, lat=cache["lat"], lon=cache["lon"], d=cache["current"], weather=cache["current"]["weather"][0]["description"], forecast=cache["hourly"])
+    
+    # Test mailing system
+    msg = Message("hello", sender="tyabrennan@gmail.com", recipients=["tyabrennan@gmail.com"])
+    mail.send(msg)
+    return render_template("index.html", zip=geocode, lat=cache["lat"], lon=cache["lon"], d=cache["current"], 
+            weather=cache["current"]["weather"][0]["description"], forecast=cache["hourly"])
 
 
 
@@ -123,22 +132,24 @@ def register():
 
     return render_template("register.html")
 
+
 @app.route("/register/survey", methods=["GET", "POST"])
 @login_required
 def survey():
+    z = db.execute("SELECT email,zip FROM users WHERE id=?", session["user_id"])[0]
     if request.method == "POST":
-        if not request.form.get("zip"):
-            return apology("Enter a zipcode!")
         zip=request.form.get("zip")
-        if not RepresentsInt(zip):
+        email = request.form.get("email")
+        if not request.form.get("zip") and not z["zip"]:
+            return apology("Please record a zipcode")
+        if not RepresentsInt(zip) and zip != None:
             return apology("Zipcode is not an int")
-        if not request.form.get("email"):
-            email = "ree"
-        else:
-            email = request.form.get("email")
         db.execute("UPDATE users SET zip=?, email=? WHERE id=?", zip, str(email), session["user_id"])
         return redirect("/")
-    return render_template("survey.html")
+    x = db.execute("SELECT email,zip FROM users WHERE id=?", session["user_id"])[0]
+    email = x["email"]
+    zip = x["zip"]
+    return render_template("survey.html", email=email, zip=zip)
 
 
 @app.route("/changepassword", methods=["GET", "POST"])

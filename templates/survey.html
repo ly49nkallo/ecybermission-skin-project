@@ -6,10 +6,18 @@
     <h1 class="jumbotron">Setup account information</h1>
     <br>
     <form action="/register/survey" method="post">
+        <p>Enter current Postalcode or Zipcode</p>
+        {% if zip %}
+        <p>Current postal/zipcode: {{zip}}</p>
+        {% endif %}
         <div class="form-group">
             <input autocomplete="off" autofocus class="form-control" name="zip" placeholder="Zipcode or Postalcode" type="text">
         </div>
+        
         <p>Enter email address (leave blank to opt-out of email updates)</p>
+        {% if email %}
+            <p>Current recorded email address: {{email}}</p>
+        {% endif %}
         <div class="form-group">
             <input autocomplete="off" autofocus class="form-control" name="email" placeholder="Email adresss" type="text">
         </div>
