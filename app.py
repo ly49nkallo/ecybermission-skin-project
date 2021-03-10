@@ -69,8 +69,8 @@ def index():
         row["time"] = datetime.utcfromtimestamp(int(row["dt"])).strftime('%m/%d %H')
     
     # Test mailing system
-    msg = Message("hello", sender="tyabrennan@gmail.com", recipients=["tyabrennan@gmail.com"])
-    mail.send(msg)
+    # msg = Message("hello", sender="tyabrennan@gmail.com", recipients=["tyabrennan@gmail.com"])
+    # mail.send(msg)
     return render_template("index.html", zip=geocode, lat=cache["lat"], lon=cache["lon"], d=cache["current"], 
             weather=cache["current"]["weather"][0]["description"], forecast=cache["hourly"])
 
