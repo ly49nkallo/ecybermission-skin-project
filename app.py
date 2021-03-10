@@ -12,7 +12,7 @@ from datetime import datetime
 from flask_mail import Mail
 from flask_mail import Message
 
-from header import login_required, lookup, lookup_by_geocode
+from header import login_required, lookup, lookup_by_geocode, return_reapply
 
 # Configure CS50 Library to use SQLite database
 db = SQL.SQL("sqlite:///users.db")
@@ -70,8 +70,14 @@ def index():
     # Test mailing system
     # msg = Message("hello", sender="tyabrennan@gmail.com", recipients=["tyabrennan@gmail.com"])
     # mail.send(msg)
+    skintone = db.execute("SELECT skintone FROM users WHERE id=?", session["user_id"])[0]["skintone"]
+    uvi = cache["current"]["uvi"]
+    spf = db.execute("SELECT spf FROM users WHERE id=?", session["user_id"])[0]["spf"]
+    if uvi == None or not spf:
+        return render_template("index.html", zip=geocode, lat=cache["lat"], lon=cache["lon"], d=cache["current"], 
+            weather=cache["current"]["weather"][0]["description"], forecast=cache["hourly"], rec=None)
     return render_template("index.html", zip=geocode, lat=cache["lat"], lon=cache["lon"], d=cache["current"], 
-            weather=cache["current"]["weather"][0]["description"], forecast=cache["hourly"])
+            weather=cache["current"]["weather"][0]["description"], forecast=cache["hourly"], rec=return_reapply(skintone, uvi, spf))
 
 
 
@@ -143,7 +149,19 @@ def survey():
             return apology("Please record a zipcode")
         if not RepresentsInt(zip) and zip != None:
             return apology("Zipcode is not an int")
-        db.execute("UPDATE users SET zip=?, email=? WHERE id=?", zip, str(email), session["user_id"])
+        spf = request.form.get("spf")
+        skintone = request.form.get("skintone")
+        if not skintone:
+            skintone = 0
+        if not RepresentsInt(skintone):
+            return apology("skintone must be an integer")
+        if not int(skintone) in range(10):
+            return apology("skintone not in range")
+        if spf and not RepresentsInt(spf):
+            return apology("spf must be a number")
+        spf = int(spf)
+        db.execute("UPDATE users SET zip=?, email=?, spf=?, skintone=? WHERE id=?", 
+                zip, str(email), int(spf), int(skintone), session["user_id"])
         return redirect("/")
     x = db.execute("SELECT email,zip FROM users WHERE id=?", session["user_id"])[0]
     email = x["email"]

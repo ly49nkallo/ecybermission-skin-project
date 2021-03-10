@@ -9,6 +9,11 @@
 <p>{{zip}}</p>
 <p>{{lat}} by {{lon}}</p>
 <br>
+{% if rec %}
+<h2>Current sunscreen application reconmmendations</h2>
+<h1>Reapply every {{rec}} hour(s)</h1>
+<br><br>
+{% endif %}
 <h2>Current Weather</h2>
 <table class="table">
         <tr>
