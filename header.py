@@ -75,6 +75,8 @@ with open('data.json', 'w', encoding='utf-8') as f:
 #  https://stackoverflow.com/questions/12309269/how-do-i-write-json-data-to-a-file
 
 def return_reapply(skintone, uvi, spf):
+    if skintone == None:
+        skintone = 0
     if not RepresentsInt(uvi) or not RepresentsInt(skintone) or not RepresentsInt(spf):
         return Exception
     uvi = int(uvi)
