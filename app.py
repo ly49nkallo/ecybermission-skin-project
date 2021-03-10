@@ -3,7 +3,6 @@ import sqlite3
 #!/SQL.py
 import SQL
 
-from types import MethodDescriptorType
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
 from tempfile import mkdtemp
@@ -70,7 +69,7 @@ def index():
     
     # Test mailing system
     # msg = Message("hello", sender="tyabrennan@gmail.com", recipients=["tyabrennan@gmail.com"])
-    # mail.send(msg)web: gunicorn app:app
+    # mail.send(msg)
     return render_template("index.html", zip=geocode, lat=cache["lat"], lon=cache["lon"], d=cache["current"], 
             weather=cache["current"]["weather"][0]["description"], forecast=cache["hourly"])
 
